@@ -49,11 +49,13 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        //move the player towards the movePoint
         transform.position = Vector3.MoveTowards(transform.position, movePoint.position, moveSpeed * Time.deltaTime);
 
         var moveAction = InputSystem.actions?["Move"];
         if (moveAction == null) return;
 
+        //if the player is at the move point, allow movement
         if (moveAction.ReadValue<Vector2>() == Vector2.zero)
         {
             if (transform.position == movePoint.transform.position)
@@ -61,6 +63,7 @@ public class Player : MonoBehaviour
                 hasMoved = false;
             }
         }
+        //otherwise, check input for vertical availability
         else if (!hasMoved)
         {
             input = moveAction.ReadValue<Vector2>();
@@ -71,6 +74,8 @@ public class Player : MonoBehaviour
             }
             move = new Vector3(input.x * 2f, input.y * 2f, 0);
 
+            //Create an overlap box outwards from the player, if the box hits something on the obstacles layer, don't
+            //allow movement
             Vector3 targetPos = movePoint.transform.position + move;
             Collider2D hit = Physics2D.OverlapBox(targetPos, new Vector2(2f, 0.5f), 0f,obstacleLayer);
             debugHit = hit;
@@ -80,6 +85,7 @@ public class Player : MonoBehaviour
                 debugText.text = hit != null ? $"Hit: {hit.name}" : "Hit: none";
             }
             
+            //if the collider finds something, check if it is a door
             if (hit != null)
             {
                 Door door = hit.GetComponentInParent<Door>();
@@ -89,6 +95,7 @@ public class Player : MonoBehaviour
                     return; // blocked by a wall, closed door, or anything on obstacleLayer
                 }
             }
+            //if allowed to move, move
             hasMoved = true;
             movePoint.transform.position += move;
             HandleMovement(move);
@@ -96,6 +103,7 @@ public class Player : MonoBehaviour
         }
     }
 
+    //Stores player moves up to max, spawns ghost when max moves reached
     void HandleMovement(Vector3 playerMove)
     {
         if (!ghostSpawned)
@@ -110,14 +118,14 @@ public class Player : MonoBehaviour
         }
         else
         {
-            // Once spawned, every player input triggers the ghost to take its next step
+            //Once spawned, every input triggers the ghost to take its next step
             if (ghostManager != null)
             {
                 ghostManager.TriggerStep();
             }
         }
     }
-
+    
     void SpawnGhost()
     {
         if (ghost != null)
@@ -136,6 +144,7 @@ public class Player : MonoBehaviour
         }
     }
 
+    //gizmos for debug
     void OnDrawGizmos()
     {
         if (movePoint == null) return;

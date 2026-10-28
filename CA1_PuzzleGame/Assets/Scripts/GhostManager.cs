@@ -8,9 +8,10 @@ public class GhostManager : MonoBehaviour
     private Queue<Vector3> moves = new Queue<Vector3>();
     public LayerMask obstacleLayer;
 
+    //instantiate movePoint and set it to the players position
     void Awake()
     {
-        GameObject mp = new GameObject(gameObject.name + "_MovePoint");
+        GameObject mp = new GameObject(gameObject.name + "movePoint");
         mp.transform.position = transform.position;
         movePoint = mp.transform;
         movePoint.parent = null; 
@@ -20,17 +21,17 @@ public class GhostManager : MonoBehaviour
     {
         if (movePoint == null) return;
 
-        //move towards its movePoint every frame
+        //move towards its movePoint
         transform.position = Vector3.MoveTowards(transform.position, movePoint.position, moveSpeed * Time.deltaTime);
     }
 
-    // Receives the initial batch of recorded moves from the player
+    // Receives recorded moves from the player
     public void InitializeMoves(Queue<Vector3> recordedMoves)
     {
         moves = new Queue<Vector3>(recordedMoves);
     }
 
-    // Called ONLY when the player makes a new move
+    // Called when the player makes a move
     public void TriggerStep()
     {
         // Only move if there are still steps left in the queue
@@ -39,6 +40,7 @@ public class GhostManager : MonoBehaviour
             Vector3 nextMove = moves.Peek();
             Vector2 targetPosition = movePoint.position + nextMove;
 
+            //the same collision check the player has
             Collider2D hit = Physics2D.OverlapBox(targetPosition, new Vector2(0.5f, 0.5f), 0f, obstacleLayer);
 
             if (hit != null)
@@ -46,7 +48,6 @@ public class GhostManager : MonoBehaviour
                 Door door = hit.gameObject.GetComponent<Door>();
                 if (!door.isOpen)
                 {
-                    Debug.Log("clone collision");
                     return;
                 }
             }

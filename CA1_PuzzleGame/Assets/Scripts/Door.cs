@@ -11,7 +11,7 @@ public class Door : MonoBehaviour
         doorCollider = GetComponent<Collider2D>();
         doorSpriteRenderer = GetComponent<SpriteRenderer>();
     }
-
+    
     void Update()
     {
         if (isOpen)

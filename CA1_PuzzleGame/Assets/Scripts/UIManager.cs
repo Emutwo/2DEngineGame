@@ -9,13 +9,6 @@ public class UIManager : MonoBehaviour
     private float time;
     
     
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
     void Update()
     {
         player = gameObject.GetComponent<Player>();
@@ -23,10 +16,5 @@ public class UIManager : MonoBehaviour
         {
             text.text = player.ToString();
         }
-        else
-        {
-            //Debug.Log("Player is null");
-        }
-        
     }
 }
