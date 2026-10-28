@@ -25,6 +25,7 @@ public class Player : MonoBehaviour
     private GhostManager ghostManager;
     private bool ghostSpawned = false;
     private Vector3 spawnPos;
+    private Collider2D collider2D;
     
     //temp
     public TMP_Text debugText;
@@ -32,6 +33,7 @@ public class Player : MonoBehaviour
     
     void Start()
     {
+        collider2D = GetComponent<BoxCollider2D>();
         GameObject textObj = GameObject.FindWithTag("DebugText");
         if (textObj != null)
         {
@@ -52,6 +54,15 @@ public class Player : MonoBehaviour
         //move the player towards the movePoint
         transform.position = Vector3.MoveTowards(transform.position, movePoint.position, moveSpeed * Time.deltaTime);
 
+
+        if (transform.position == movePoint.position)
+        {
+            if (ApplyGravity())
+            {
+                return;
+            }
+        }
+        
         var moveAction = InputSystem.actions?["Move"];
         if (moveAction == null) return;
 
@@ -99,7 +110,6 @@ public class Player : MonoBehaviour
             hasMoved = true;
             movePoint.transform.position += move;
             HandleMovement(move);
-            
         }
     }
 
@@ -142,6 +152,24 @@ public class Player : MonoBehaviour
             ghostSpawned = true;
             Debug.Log("Ghost spawned with " + maxMoves + " moves!");
         }
+    }
+
+    //checks beneath the player for terrain and falls until it finds some
+    bool ApplyGravity()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(movePoint.position, Vector2.down, Mathf.Infinity, obstacleLayer);
+        if (hit.collider == null) return false;
+
+        // Distance from the player's pivot down to the bottom of its collider
+        float feetOffset = transform.position.y - collider2D.bounds.min.y;
+        float fall = hit.distance - feetOffset;
+        
+        if (fall > 0.01f)
+        {
+            movePoint.position += Vector3.down * fall;
+            return true;
+        }
+        return false;
     }
 
     //gizmos for debug

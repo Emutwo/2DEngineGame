@@ -7,10 +7,12 @@ public class GhostManager : MonoBehaviour
     public Transform movePoint;
     private Queue<Vector3> moves = new Queue<Vector3>();
     public LayerMask obstacleLayer;
+    private Collider2D collider2D;
 
     //instantiate movePoint and set it to the players position
     void Awake()
     {
+        collider2D = GetComponent<Collider2D>();
         GameObject mp = new GameObject(gameObject.name + "movePoint");
         mp.transform.position = transform.position;
         movePoint = mp.transform;
@@ -23,6 +25,11 @@ public class GhostManager : MonoBehaviour
 
         //move towards its movePoint
         transform.position = Vector3.MoveTowards(transform.position, movePoint.position, moveSpeed * Time.deltaTime);
+
+        if (transform.position == movePoint.position)
+        {
+            ApplyGravity();
+        }
     }
 
     // Receives recorded moves from the player
@@ -45,16 +52,35 @@ public class GhostManager : MonoBehaviour
 
             if (hit != null)
             {
-                Door door = hit.gameObject.GetComponent<Door>();
-                if (!door.isOpen)
+                Door door = hit.GetComponentInParent<Door>();
+                bool isOpenDoor = door != null && door.isOpen;
+                if (!isOpenDoor)
                 {
                     return;
                 }
             }
+            
             nextMove = moves.Dequeue();
             movePoint.position += nextMove;
             Debug.Log("Ghost took a step. Remaining moves: " + moves.Count);
         }
+    }
+    
+    bool ApplyGravity()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(movePoint.position, Vector2.down, Mathf.Infinity, obstacleLayer);
+        if (hit.collider == null) return false;
+
+        // Distance from the player's pivot down to the bottom of its collider
+        float feetOffset = transform.position.y - collider2D.bounds.min.y;
+        float fall = hit.distance - feetOffset;
+        
+        if (fall > 0.01f)
+        {
+            movePoint.position += Vector3.down * fall;
+            return true;
+        }
+        return false;
     }
 
     void OnDestroy()
