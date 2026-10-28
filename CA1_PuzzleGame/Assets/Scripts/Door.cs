@@ -1,0 +1,28 @@
+using UnityEngine;
+
+public class Door : MonoBehaviour
+{
+    public bool isOpen = false;
+    private Collider2D doorCollider;
+    private SpriteRenderer doorSpriteRenderer;
+
+    void Start()
+    {
+        doorCollider = GetComponent<Collider2D>();
+        doorSpriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    void Update()
+    {
+        if (isOpen)
+        {
+            Open();
+        }
+    }
+    void Open()
+    {
+        doorCollider.enabled = false;
+        doorSpriteRenderer.enabled = false;
+    }
+   
+}
