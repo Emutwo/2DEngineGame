@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using TMPro;
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Debug = UnityEngine.Debug;
@@ -33,6 +34,7 @@ public class Player : MonoBehaviour
     public float deathDelay = 2f;
     private float deathTimer;
     private bool isDead = false;
+    private CinemachineBrain brain;
 
     //temp
     public TMP_Text debugText;
@@ -40,24 +42,15 @@ public class Player : MonoBehaviour
 
     void Start()
     {
+        brain = Camera.main.GetComponent<CinemachineBrain>();
         collider2D = GetComponent<BoxCollider2D>();
-        GameObject textObj = GameObject.FindWithTag("DebugText");
-        if (textObj != null)
-        {
-            debugText = textObj.GetComponent<TMP_Text>();
-        }
-
-        if (debugText == null)
-        {
-            Debug.LogWarning("No text component found on " + gameObject.name);
-        }
-
         if (movePoint != null) movePoint.parent = null;
         spawnPos = transform.position;
     }
 
     void Update()
     {
+        //load the scene again after deathTimer in seconds
         if (isDead)
         {
             deathTimer -= Time.deltaTime;
@@ -65,6 +58,12 @@ public class Player : MonoBehaviour
             {
                 SceneManager.LoadScene(0);
             }
+            return;
+        }
+        
+        //ensure the player cannot move when the camera is transitioning
+        if (brain != null && brain.IsBlending)
+        {
             return;
         }
         
@@ -110,13 +109,9 @@ public class Player : MonoBehaviour
             //Create an overlap box outwards from the player, if the box hits something on the obstacles layer, don't
             //allow movement
             Vector3 targetPos = movePoint.transform.position + move;
-            Collider2D hit = Physics2D.OverlapBox(targetPos, new Vector2(2f, 0.5f), 0f, obstacleLayer);
+            Collider2D hit = Physics2D.OverlapBox(targetPos, new Vector2(.5f, .5f), 0f, obstacleLayer);
             debugHit = hit;
-
-            if (debugText != null)
-            {
-                debugText.text = hit != null ? $"Hit: {hit.name}" : "Hit: none";
-            }
+            
 
             //if the collider finds something, check if it is a door
             if (hit != null)
@@ -203,14 +198,13 @@ public class Player : MonoBehaviour
         {
             return;
         }
+        
         isDead = true;
         deathTimer = deathDelay;
-        Debug.Log($"Die: deathScreen={(deathScreen != null ? deathScreen.name : "NULL")} delay={deathDelay}");
         
         if (deathScreen != null)
         {
             deathScreen.SetActive(true);
-            Debug.Log($"activeSelf={deathScreen.activeSelf} activeInHierarchy={deathScreen.activeInHierarchy}");
         }
     }
 
