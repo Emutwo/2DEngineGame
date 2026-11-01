@@ -18,11 +18,20 @@ public class Door : MonoBehaviour
         {
             Open();
         }
+        else if (!isOpen)
+        {
+            Close();
+        }
     }
     void Open()
     {
         doorCollider.enabled = false;
         doorSpriteRenderer.enabled = false;
     }
-   
+
+    void Close()
+    {
+        doorCollider.enabled = true;
+        doorSpriteRenderer.enabled = true;
+    }
 }
