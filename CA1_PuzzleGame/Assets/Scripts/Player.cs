@@ -4,9 +4,11 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Debug = UnityEngine.Debug;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
+    //player settings
     public float moveSpeed = 1f;
     public Transform movePoint;
     [SerializeField] Rigidbody2D rb;
@@ -19,7 +21,6 @@ public class Player : MonoBehaviour
     // Ghost settings
     public int maxMoves = 10;
     public GameObject ghost;
-
     private List<Vector3> recordedMoves = new List<Vector3>();
     private GameObject activeGhost;
     private GhostManager ghostManager;
@@ -27,10 +28,16 @@ public class Player : MonoBehaviour
     private Vector3 spawnPos;
     private Collider2D collider2D;
     
+    //UI Stuff
+    public GameObject deathScreen;
+    public float deathDelay = 2f;
+    private float deathTimer;
+    private bool isDead = false;
+
     //temp
     public TMP_Text debugText;
     private Collider2D debugHit;
-    
+
     void Start()
     {
         collider2D = GetComponent<BoxCollider2D>();
@@ -44,17 +51,31 @@ public class Player : MonoBehaviour
         {
             Debug.LogWarning("No text component found on " + gameObject.name);
         }
-        
+
         if (movePoint != null) movePoint.parent = null;
         spawnPos = transform.position;
     }
 
     void Update()
     {
+        if (isDead)
+        {
+            deathTimer -= Time.deltaTime;
+            if (deathTimer <= 0f)
+            {
+                SceneManager.LoadScene(0);
+            }
+            return;
+        }
+        
         //move the player towards the movePoint
         transform.position = Vector3.MoveTowards(transform.position, movePoint.position, moveSpeed * Time.deltaTime);
-
-
+        if (activeGhost != null && Vector2.Distance(activeGhost.transform.position, movePoint.position) <= 0.1f)
+        {
+            Die();
+            return;
+        }
+        
         if (transform.position == movePoint.position)
         {
             if (ApplyGravity())
@@ -62,7 +83,7 @@ public class Player : MonoBehaviour
                 return;
             }
         }
-        
+
         var moveAction = InputSystem.actions?["Move"];
         if (moveAction == null) return;
 
@@ -79,23 +100,24 @@ public class Player : MonoBehaviour
         {
             input = moveAction.ReadValue<Vector2>();
 
-            if((input.y > 0  || input.y < 0 )&& !canMoveVertical)
+            if ((input.y > 0 || input.y < 0) && !canMoveVertical)
             {
                 input.y = 0;
             }
+
             move = new Vector3(input.x * 2f, input.y * 2f, 0);
 
             //Create an overlap box outwards from the player, if the box hits something on the obstacles layer, don't
             //allow movement
             Vector3 targetPos = movePoint.transform.position + move;
-            Collider2D hit = Physics2D.OverlapBox(targetPos, new Vector2(2f, 0.5f), 0f,obstacleLayer);
+            Collider2D hit = Physics2D.OverlapBox(targetPos, new Vector2(2f, 0.5f), 0f, obstacleLayer);
             debugHit = hit;
-            
+
             if (debugText != null)
             {
                 debugText.text = hit != null ? $"Hit: {hit.name}" : "Hit: none";
             }
-            
+
             //if the collider finds something, check if it is a door
             if (hit != null)
             {
@@ -106,6 +128,7 @@ public class Player : MonoBehaviour
                     return; // blocked by a wall, closed door, or anything on obstacleLayer
                 }
             }
+
             //if allowed to move, move
             hasMoved = true;
             movePoint.transform.position += move;
@@ -135,7 +158,7 @@ public class Player : MonoBehaviour
             }
         }
     }
-    
+
     void SpawnGhost()
     {
         if (ghost != null)
@@ -149,6 +172,7 @@ public class Player : MonoBehaviour
                 // Give the ghost its fixed sequence of moves
                 ghostManager.InitializeMoves(new Queue<Vector3>(recordedMoves));
             }
+
             ghostSpawned = true;
             Debug.Log("Ghost spawned with " + maxMoves + " moves!");
         }
@@ -163,16 +187,34 @@ public class Player : MonoBehaviour
         // Distance from the player's pivot down to the bottom of its collider
         float feetOffset = transform.position.y - collider2D.bounds.min.y;
         float fall = hit.distance - feetOffset;
-        
+
         if (fall > 0.01f)
         {
             movePoint.position += Vector3.down * fall;
             return true;
         }
+
         return false;
     }
 
-    //gizmos for debug
+    private void Die()
+    {
+        if (isDead)
+        {
+            return;
+        }
+        isDead = true;
+        deathTimer = deathDelay;
+        Debug.Log($"Die: deathScreen={(deathScreen != null ? deathScreen.name : "NULL")} delay={deathDelay}");
+        
+        if (deathScreen != null)
+        {
+            deathScreen.SetActive(true);
+            Debug.Log($"activeSelf={deathScreen.activeSelf} activeInHierarchy={deathScreen.activeInHierarchy}");
+        }
+    }
+
+//gizmos for debug
     void OnDrawGizmos()
     {
         if (movePoint == null) return;
