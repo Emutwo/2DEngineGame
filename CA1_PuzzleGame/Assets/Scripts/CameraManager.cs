@@ -6,6 +6,7 @@ public class CameraManager : MonoBehaviour
     
     public CinemachineCamera roomCamera;
     private static CinemachineCamera currentCamera;
+    public Transform roomSpawnPoint;
    
     void Start()
     {
@@ -13,10 +14,14 @@ public class CameraManager : MonoBehaviour
     }
     void OnTriggerEnter2D(Collider2D other)
     {
+        
+        Player player = other.gameObject.GetComponent<Player>();
+        
         if (!other.CompareTag("Player"))
         {
             return;
         }
+        
         
         if (roomCamera == null)
         {
@@ -30,5 +35,8 @@ public class CameraManager : MonoBehaviour
         }
         roomCamera.Priority = 20;
         currentCamera = roomCamera;
+        
+        player.movePoint.position = roomSpawnPoint.position;
+        
     }
 }
