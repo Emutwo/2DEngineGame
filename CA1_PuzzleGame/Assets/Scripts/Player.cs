@@ -67,6 +67,13 @@ public class Player : MonoBehaviour
             return;
         }
         
+        
+        var restartAction = InputSystem.actions?["Restart"];
+        if (restartAction != null && restartAction.IsPressed())
+        {
+            Restart();
+        }
+        
         //move the player towards the movePoint
         transform.position = Vector3.MoveTowards(transform.position, movePoint.position, moveSpeed * Time.deltaTime);
         if (activeGhost != null && Vector2.Distance(activeGhost.transform.position, movePoint.position) <= 0.1f)
@@ -109,7 +116,7 @@ public class Player : MonoBehaviour
             //Create an overlap box outwards from the player, if the box hits something on the obstacles layer, don't
             //allow movement
             Vector3 targetPos = movePoint.transform.position + move;
-            Collider2D hit = Physics2D.OverlapBox(targetPos, new Vector2(.5f, .5f), 0f, obstacleLayer);
+            Collider2D hit = Physics2D.OverlapBox(targetPos, new Vector2(2f, .5f), 0f, obstacleLayer);
             debugHit = hit;
             
 
@@ -206,6 +213,11 @@ public class Player : MonoBehaviour
         {
             deathScreen.SetActive(true);
         }
+    }
+
+    private void Restart()
+    {
+        SceneManager.LoadScene(0);
     }
 
 //gizmos for debug
