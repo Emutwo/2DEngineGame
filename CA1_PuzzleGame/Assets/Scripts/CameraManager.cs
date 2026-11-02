@@ -14,14 +14,12 @@ public class CameraManager : MonoBehaviour
     }
     void OnTriggerEnter2D(Collider2D other)
     {
-        
         Player player = other.gameObject.GetComponent<Player>();
         
         if (!other.CompareTag("Player"))
         {
             return;
         }
-        
         
         if (roomCamera == null)
         {

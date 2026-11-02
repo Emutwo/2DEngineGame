@@ -18,6 +18,7 @@ public class Player : MonoBehaviour
     private bool hasMoved = false;
     public bool canMoveVertical = false;
     public LayerMask obstacleLayer;
+    public LayerMask ladderLayer;
 
     // Ghost settings
     public int maxMoves = 10;
@@ -82,7 +83,7 @@ public class Player : MonoBehaviour
             return;
         }
         
-        if (transform.position == movePoint.position)
+        if (!canMoveVertical && transform.position == movePoint.position)
         {
             if (ApplyGravity())
             {
@@ -123,12 +124,19 @@ public class Player : MonoBehaviour
             //if the collider finds something, check if it is a door
             if (hit != null)
             {
-                Door door = hit.GetComponentInParent<Door>();
+                Door door = hit.GetComponent<Door>();
                 bool isOpenDoor = door != null && door.isOpen;
                 if (!isOpenDoor)
                 {
                     return; // blocked by a wall, closed door, or anything on obstacleLayer
                 }
+            }
+            
+            //check for ladders
+            Collider2D ladderHit = Physics2D.OverlapBox(targetPos, new Vector2(0.5f, 0.5f), 0f, ladderLayer);
+            if (input.y != 0 && ladderHit == null)
+            {
+                return;
             }
 
             //if allowed to move, move
@@ -214,6 +222,7 @@ public class Player : MonoBehaviour
             deathScreen.SetActive(true);
         }
     }
+    
 
     private void Restart()
     {
