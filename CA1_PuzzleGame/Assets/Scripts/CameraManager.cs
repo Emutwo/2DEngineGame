@@ -7,15 +7,10 @@ public class CameraManager : MonoBehaviour
     public CinemachineCamera roomCamera;
     private static CinemachineCamera currentCamera;
     public Transform roomSpawnPoint;
-   
-    void Start()
-    {
-        Debug.Log($"{name}: RoomTrigger alive, camera={(roomCamera != null ? roomCamera.name : "NULL")}");
-    }
+    public int roomMaxMoves = 3;
+    
     void OnTriggerEnter2D(Collider2D other)
     {
-        Player player = other.gameObject.GetComponent<Player>();
-        
         if (!other.CompareTag("Player"))
         {
             return;
@@ -25,16 +20,23 @@ public class CameraManager : MonoBehaviour
         {
             return;
         }
+        Player player = other.gameObject.GetComponent<Player>();
         
-        //if the camera is not the same as the previous one, reduce it's priority
-        if (currentCamera != null && currentCamera != roomCamera)
+        //Reset ghost, move player and change camera on room change
+        bool roomChanged = currentCamera != roomCamera;
+        if (roomChanged)
         {
-            currentCamera.Priority = 10;
+            if (currentCamera != null)
+            {
+                currentCamera.Priority = 10;
+                player.movePoint.position = roomSpawnPoint.position;
+                player.maxMoves = roomMaxMoves;
+                player.ResetGhost(roomSpawnPoint.position);
+            }
         }
+        
         roomCamera.Priority = 20;
         currentCamera = roomCamera;
-        
-        player.movePoint.position = roomSpawnPoint.position;
         
     }
 }

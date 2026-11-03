@@ -7,6 +7,7 @@ public class GhostManager : MonoBehaviour
     public Transform movePoint;
     private Queue<Vector3> moves = new Queue<Vector3>();
     public LayerMask obstacleLayer;
+    public LayerMask ladderLayer;
     private Collider2D collider2D;
 
     //instantiate movePoint and set it to the players position
@@ -26,7 +27,7 @@ public class GhostManager : MonoBehaviour
         //move towards its movePoint
         transform.position = Vector3.MoveTowards(transform.position, movePoint.position, moveSpeed * Time.deltaTime);
 
-        if (transform.position == movePoint.position)
+        if (!OnLadder() && transform.position == movePoint.position)
         {
             ApplyGravity();
         }
@@ -81,6 +82,11 @@ public class GhostManager : MonoBehaviour
             return true;
         }
         return false;
+    }
+    
+    bool OnLadder()
+    {
+        return Physics2D.OverlapBox(movePoint.position, new Vector2(.5f, .5f), 0f, ladderLayer);
     }
 
     void OnDestroy()

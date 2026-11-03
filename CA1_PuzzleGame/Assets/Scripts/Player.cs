@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
@@ -16,7 +15,6 @@ public class Player : MonoBehaviour
     private Vector3 move;
     private Vector2 input;
     private bool hasMoved = false;
-    public bool canMoveVertical = false;
     public LayerMask obstacleLayer;
     public LayerMask ladderLayer;
 
@@ -68,7 +66,6 @@ public class Player : MonoBehaviour
             return;
         }
         
-        
         var restartAction = InputSystem.actions?["Restart"];
         if (restartAction != null && restartAction.IsPressed())
         {
@@ -77,13 +74,13 @@ public class Player : MonoBehaviour
         
         //move the player towards the movePoint
         transform.position = Vector3.MoveTowards(transform.position, movePoint.position, moveSpeed * Time.deltaTime);
-        if (activeGhost != null && Vector2.Distance(activeGhost.transform.position, movePoint.position) <= 0.1f)
+        if (activeGhost != null && Vector2.Distance(activeGhost.transform.position, transform.position) <= 0.1f)
         {
             Die();
             return;
         }
         
-        if (!canMoveVertical && transform.position == movePoint.position)
+        if (!OnLadder() && transform.position == movePoint.position)
         {
             if (ApplyGravity())
             {
@@ -107,7 +104,7 @@ public class Player : MonoBehaviour
         {
             input = moveAction.ReadValue<Vector2>();
 
-            if ((input.y > 0 || input.y < 0) && !canMoveVertical)
+            if ((input.y > 0 || input.y < 0) && !OnLadder())
             {
                 input.y = 0;
             }
@@ -179,6 +176,8 @@ public class Player : MonoBehaviour
             if (ghostManager != null)
             {
                 ghostManager.moveSpeed = moveSpeed;
+                ghostManager.ladderLayer = ladderLayer;
+                ghostManager.obstacleLayer = obstacleLayer;
                 // Give the ghost its fixed sequence of moves
                 ghostManager.InitializeMoves(new Queue<Vector3>(recordedMoves));
             }
@@ -186,6 +185,20 @@ public class Player : MonoBehaviour
             ghostSpawned = true;
             Debug.Log("Ghost spawned with " + maxMoves + " moves!");
         }
+    }
+
+    public void ResetGhost(Vector3 newSpawnPos)
+    {
+        if (activeGhost != null)
+        {
+            Destroy(activeGhost);
+        }
+        
+        activeGhost = null;
+        ghostSpawned = false;
+        ghostManager = null;
+        recordedMoves.Clear();
+        spawnPos = newSpawnPos;
     }
 
     //checks beneath the player for terrain and falls until it finds some
@@ -229,7 +242,12 @@ public class Player : MonoBehaviour
         SceneManager.LoadScene(0);
     }
 
-//gizmos for debug
+    bool OnLadder()
+    {
+        return Physics2D.OverlapBox(movePoint.position, new Vector2(.5f, .5f), 0f, ladderLayer);
+    }
+
+    //gizmos for debug
     void OnDrawGizmos()
     {
         if (movePoint == null) return;
