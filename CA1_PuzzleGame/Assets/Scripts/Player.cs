@@ -214,7 +214,10 @@ public class Player : MonoBehaviour
     bool ApplyGravity()
     {
         RaycastHit2D hit = Physics2D.Raycast(movePoint.position, Vector2.down, Mathf.Infinity, obstacleLayer);
-        if (hit.collider == null) return false;
+        if (hit.collider == null)
+        {
+            return false;
+        }
 
         // Distance from the player's pivot down to the bottom of its collider
         float feetOffset = transform.position.y - collider2D.bounds.min.y;

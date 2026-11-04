@@ -113,8 +113,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 523295175
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 1372822354043030803, guid: b0f86419624362f4baf169b301852533, type: 3}
@@ -213,6 +213,9 @@ MonoBehaviour:
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 12
+  ladderLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!50 &824503572200009602
 Rigidbody2D:
   serializedVersion: 5
