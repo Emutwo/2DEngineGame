@@ -54,7 +54,7 @@ public class GhostManager : MonoBehaviour
             if (hit != null)
             {
                 Door door = hit.GetComponentInParent<Door>();
-                bool isOpenDoor = door != null && door.isOpen;
+                bool isOpenDoor = door != null && door.IsOpen();
                 if (!isOpenDoor)
                 {
                     return;

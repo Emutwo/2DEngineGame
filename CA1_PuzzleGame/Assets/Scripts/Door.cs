@@ -2,36 +2,35 @@ using UnityEngine;
 
 public class Door : MonoBehaviour
 {
-    public bool isOpen = false;
+    private int pressCount;
     private Collider2D doorCollider;
     private SpriteRenderer doorSpriteRenderer;
 
-    void Start()
+    void Awake()
     {
         doorCollider = GetComponent<Collider2D>();
         doorSpriteRenderer = GetComponent<SpriteRenderer>();
     }
-    
-    void Update()
+
+    public bool IsOpen()
     {
-        if (isOpen)
-        {
-            Open();
-        }
-        else if (!isOpen)
-        {
-            Close();
-        }
+        return pressCount > 0;
     }
-    void Open()
+    public void AddPress()
     {
-        doorCollider.enabled = false;
-        doorSpriteRenderer.enabled = false;
+        pressCount++;
+        OpenCloseDoor();
     }
 
-    void Close()
+    public void RemovePress()
     {
-        doorCollider.enabled = true;
-        doorSpriteRenderer.enabled = true;
+        pressCount--;
+        OpenCloseDoor();
+    }
+
+    void OpenCloseDoor()
+    {
+        doorCollider.enabled = !IsOpen();
+        doorSpriteRenderer.enabled = !IsOpen();
     }
 }

@@ -3703,10 +3703,10 @@ MonoBehaviour:
   ladderLayer:
     serializedVersion: 2
     m_Bits: 64
-  maxMoves: 5
+  maxMoves: 3
   ghost: {fileID: 8939496392255167770, guid: 2ad114be45d87424f9593e9e82dffad6, type: 3}
   deathScreen: {fileID: 897865131}
-  deathDelay: 2
+  deathDelay: 3
   debugText: {fileID: 846083142}
 --- !u!1 &1803085093
 GameObject:
@@ -4020,7 +4020,8 @@ PrefabInstance:
       propertyPath: m_Offset.y
       value: 0.10690802
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7685181344160563832, guid: 64933b540eee2f142b99c7fadb85ffed, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
