@@ -8,6 +8,9 @@ public class CameraManager : MonoBehaviour
     private static CinemachineCamera currentCamera;
     public Transform roomSpawnPoint;
     public int roomMaxMoves = 3;
+
+    public static bool hasCheckPoint;
+    public static Vector3 checkPoint;
     
     void OnTriggerEnter2D(Collider2D other)
     {
@@ -28,6 +31,8 @@ public class CameraManager : MonoBehaviour
         {
             if (currentCamera != null)
             {
+                hasCheckPoint = true;
+                checkPoint = roomSpawnPoint.position;
                 currentCamera.Priority = 10;
                 player.movePoint.position = roomSpawnPoint.position;
                 player.maxMoves = roomMaxMoves;

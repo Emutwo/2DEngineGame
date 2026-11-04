@@ -43,7 +43,16 @@ public class Player : MonoBehaviour
     {
         brain = Camera.main.GetComponent<CinemachineBrain>();
         collider2D = GetComponent<BoxCollider2D>();
-        if (movePoint != null) movePoint.parent = null;
+        if (movePoint != null)
+        {
+            movePoint.parent = null;
+        }
+
+        if (CameraManager.hasCheckPoint)
+        {
+            transform.position = CameraManager.checkPoint;
+            movePoint.position = CameraManager.checkPoint;
+        }
         spawnPos = transform.position;
     }
 
