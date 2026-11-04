@@ -11,7 +11,17 @@ public class CameraManager : MonoBehaviour
 
     public static bool hasCheckPoint;
     public static Vector3 checkPoint;
-    
+
+
+    void Start()
+    {
+        if(!hasCheckPoint || roomCamera == null || roomSpawnPoint == null)
+        {
+            return;
+        }
+        bool isCheckpoint = roomSpawnPoint.position == checkPoint;
+        roomCamera.Priority = isCheckpoint ? 20 : 10;
+    }
     void OnTriggerEnter2D(Collider2D other)
     {
         if (!other.CompareTag("Player"))
@@ -23,7 +33,12 @@ public class CameraManager : MonoBehaviour
         {
             return;
         }
+        
         Player player = other.gameObject.GetComponent<Player>();
+        if (player == null)
+        {
+            return;
+        }
         
         //Reset ghost, move player and change camera on room change
         bool roomChanged = currentCamera != roomCamera;
@@ -31,13 +46,13 @@ public class CameraManager : MonoBehaviour
         {
             if (currentCamera != null)
             {
-                hasCheckPoint = true;
-                checkPoint = roomSpawnPoint.position;
                 currentCamera.Priority = 10;
-                player.movePoint.position = roomSpawnPoint.position;
-                player.maxMoves = roomMaxMoves;
-                player.ResetGhost(roomSpawnPoint.position);
             }
+            player.movePoint.position = roomSpawnPoint.position;
+            player.maxMoves = roomMaxMoves;
+            player.ResetGhost(roomSpawnPoint.position);
+            hasCheckPoint = true;
+            checkPoint = roomSpawnPoint.position;
         }
         
         roomCamera.Priority = 20;

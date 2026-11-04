@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6349449381932818020}
   - component: {fileID: 7540293916260064229}
-  - component: {fileID: 7685181344160563832}
   - component: {fileID: 4126594579971278934}
   m_Layer: 0
   m_Name: Ladder
@@ -80,18 +79,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &7685181344160563832
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6636239961334150979}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7fd016fc4ea3dbb479a0f6c506512ed4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Ladder
 --- !u!212 &4126594579971278934
 SpriteRenderer:
   serializedVersion: 3
