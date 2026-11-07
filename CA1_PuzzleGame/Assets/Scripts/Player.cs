@@ -131,7 +131,7 @@ public class Player : MonoBehaviour
             if (hit != null)
             {
                 Door door = hit.GetComponent<Door>();
-                bool isOpenDoor = door != null && door.IsOpen();
+                bool isOpenDoor = door != null && door.isOpen;
                 if (!isOpenDoor)
                 {
                     return; // blocked by a wall, closed door, or anything on obstacleLayer

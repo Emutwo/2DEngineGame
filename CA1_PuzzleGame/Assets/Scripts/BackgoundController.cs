@@ -16,6 +16,8 @@ public class BackgoundController : MonoBehaviour
         }
     }
     
+    //LateUpdate is called only after all the physics is processed each frame, since I'm moving an image, doing this after
+    //prevents jittering as the background moves with the camera
     void LateUpdate()
     {
         if (mainCamera != null)

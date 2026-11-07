@@ -5,17 +5,16 @@ public class Door : MonoBehaviour
     private int pressCount;
     private Collider2D doorCollider;
     private SpriteRenderer doorSpriteRenderer;
+    public bool startsOpen = false;
+    public bool isOpen => startsOpen ? pressCount == 0 : pressCount > 0;
 
     void Awake()
     {
         doorCollider = GetComponent<Collider2D>();
         doorSpriteRenderer = GetComponent<SpriteRenderer>();
+        OpenCloseDoor();
     }
-
-    public bool IsOpen()
-    {
-        return pressCount > 0;
-    }
+    
     public void AddPress()
     {
         pressCount++;
@@ -30,7 +29,7 @@ public class Door : MonoBehaviour
 
     void OpenCloseDoor()
     {
-        doorCollider.enabled = !IsOpen();
-        doorSpriteRenderer.enabled = !IsOpen();
+        doorCollider.enabled = !isOpen;
+        doorSpriteRenderer.enabled = !isOpen;
     }
 }
