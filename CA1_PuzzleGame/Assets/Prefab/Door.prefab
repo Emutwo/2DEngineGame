@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6253280177090834346}
   - component: {fileID: 6101391699710153812}
   - component: {fileID: 3930020621222925674}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -152,4 +152,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2eb281884acb54b41a451496552cfa6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Door
-  isOpen: 0
+  startsOpen: 0

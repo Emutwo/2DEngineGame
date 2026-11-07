@@ -38,6 +38,7 @@ public class Player : MonoBehaviour
     //temp
     public TMP_Text debugText;
     private Collider2D debugHit;
+    private bool lastOnLadder;
 
     void Start()
     {
@@ -69,11 +70,6 @@ public class Player : MonoBehaviour
             return;
         }
         
-        RaycastHit2D h = Physics2D.Raycast(movePoint.position, Vector2.down, Mathf.Infinity, obstacleLayer);
-        Debug.Log($"gravity: arrived={transform.position == movePoint.position} onLadder={OnLadder()} " +
-                  $"blending={(brain != null && brain.IsBlending)} ray={(h.collider != null ? h.collider.name : "NOTHING")} " +
-                  $"dist={h.distance} feet={transform.position.y - collider2D.bounds.min.y}");
-        
         //ensure the player cannot move when the camera is transitioning
         if (brain != null && brain.IsBlending)
         {
@@ -93,7 +89,12 @@ public class Player : MonoBehaviour
             Die();
             return;
         }
-        
+       
+        bool onLadderNow = OnLadder();
+        if (onLadderNow != lastOnLadder)
+        {
+            lastOnLadder = onLadderNow;
+        }
         if (!OnLadder() && transform.position == movePoint.position)
         {
             if (ApplyGravity())

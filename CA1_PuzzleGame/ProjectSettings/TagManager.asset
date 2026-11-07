@@ -6,6 +6,7 @@ TagManager:
   tags:
   - DebugText
   - Ghost
+  - KillBox
   layers:
   - Default
   - TransparentFX
