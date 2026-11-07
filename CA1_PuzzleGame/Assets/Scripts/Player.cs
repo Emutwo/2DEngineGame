@@ -69,6 +69,11 @@ public class Player : MonoBehaviour
             return;
         }
         
+        RaycastHit2D h = Physics2D.Raycast(movePoint.position, Vector2.down, Mathf.Infinity, obstacleLayer);
+        Debug.Log($"gravity: arrived={transform.position == movePoint.position} onLadder={OnLadder()} " +
+                  $"blending={(brain != null && brain.IsBlending)} ray={(h.collider != null ? h.collider.name : "NOTHING")} " +
+                  $"dist={h.distance} feet={transform.position.y - collider2D.bounds.min.y}");
+        
         //ensure the player cannot move when the camera is transitioning
         if (brain != null && brain.IsBlending)
         {
@@ -229,6 +234,11 @@ public class Player : MonoBehaviour
             return true;
         }
 
+        if (hit.collider.CompareTag("KillBox"))
+        {
+            Die();
+        }
+
         return false;
     }
 
@@ -265,5 +275,6 @@ public class Player : MonoBehaviour
         if (movePoint == null) return;
         Gizmos.color = debugHit != null ? Color.red : Color.green;
         Gizmos.DrawWireCube(movePoint.position + move, new Vector3(2f, 0.5f, 0f));
+        Debug.DrawRay(movePoint.position, Vector2.down * 20f, Color.red);
     }
 }

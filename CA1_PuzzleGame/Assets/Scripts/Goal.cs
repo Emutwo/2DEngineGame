@@ -6,7 +6,6 @@ public class Goal : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log($"Goal entered by {other.name} tag={other.tag}");
         if (!other.CompareTag("Player"))
         {
             return;
@@ -30,7 +29,6 @@ public class Goal : MonoBehaviour
             {
                 winScreen.SetActive(true);
             }
-            
             player.enabled = false;
         }
     }
