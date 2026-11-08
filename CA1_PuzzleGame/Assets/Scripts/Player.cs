@@ -322,6 +322,9 @@ public class Player : MonoBehaviour
         audioSource.Play();
     }
 
+    //Using OverlapBoxAll returns every collider the object is touching, including itself so while not an optimal call
+    //this is an alternate way to determine whether I'm somewhere I want to be without using layerMasks.
+    //I wanted to showcase that, a layer mask is a better solution.
     bool OnPlate(Vector3 pos)
     {
         Collider2D[] hits = Physics2D.OverlapBoxAll(pos, new Vector2(0.5f, 0.5f), 0f);
