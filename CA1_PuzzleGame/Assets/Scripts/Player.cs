@@ -34,6 +34,12 @@ public class Player : MonoBehaviour
     private float deathTimer;
     private bool isDead = false;
     private CinemachineBrain brain;
+    
+    //Audio Stuff
+    public AudioClip walkAudio;
+    public AudioClip ladderAudio;
+    public AudioClip plateAudio;
+    private AudioSource audioSource;
 
     //temp
     public TMP_Text movesText;
@@ -43,6 +49,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         brain = Camera.main.GetComponent<CinemachineBrain>();
+        audioSource = GetComponent<AudioSource>();
         collider2D = GetComponent<BoxCollider2D>();
         if (movePoint != null)
         {
@@ -154,6 +161,7 @@ public class Player : MonoBehaviour
 
             //if allowed to move, move
             hasMoved = true;
+            PlayMoveSound(targetPos, input.y != 0);
             movePoint.transform.position += move;
             HandleMovement(move);
         }
@@ -234,6 +242,7 @@ public class Player : MonoBehaviour
 
         if (fall > 0.01f)
         {
+            audioSource.Stop();
             movePoint.position += Vector3.down * fall;
             return true;
         }
@@ -262,7 +271,6 @@ public class Player : MonoBehaviour
         }
     }
     
-
     private void Restart()
     {
         SceneManager.LoadScene(0);
@@ -281,6 +289,59 @@ public class Player : MonoBehaviour
         }
         int remaining = ghostSpawned ? 0 : maxMoves - recordedMoves.Count;
         movesText.text = "Moves: "  + remaining + "/" + maxMoves;
+    }
+
+    void PlayMoveSound(Vector3 targetPos, bool isVertical)
+    {
+        if (audioSource == null)
+        {
+            return;
+        }
+
+        AudioClip active = walkAudio;
+        
+        //choose a sound to play
+        if (isVertical)
+        {
+            active = ladderAudio;
+        }
+        else if (OnPlate(targetPos))
+        {
+            active = plateAudio;
+        }
+
+        if (active == null)
+        {
+            return;
+        }
+
+        audioSource.volume = 0.5f;
+        audioSource.pitch = Random.Range(0.9f, 1.1f);
+        audioSource.Stop();
+        audioSource.clip = active;
+        audioSource.Play();
+    }
+
+    bool OnPlate(Vector3 pos)
+    {
+        Collider2D[] hits = Physics2D.OverlapBoxAll(pos, new Vector2(0.5f, 0.5f), 0f);
+
+        foreach (Collider2D hit in hits)
+        {
+            if (hit.GetComponent<PressurePlate>() != null)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void StopMoveSound()
+    {
+        if (audioSource != null)
+        {
+            audioSource.Stop();
+        }
     }
 
     //gizmos for debug

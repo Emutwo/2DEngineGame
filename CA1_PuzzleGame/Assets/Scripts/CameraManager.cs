@@ -44,10 +44,12 @@ public class CameraManager : MonoBehaviour
         bool roomChanged = currentCamera != roomCamera;
         if (roomChanged)
         {
+            
             if (currentCamera != null)
             {
                 currentCamera.Priority = 10;
             }
+            player.StopMoveSound();
             player.movePoint.position = roomSpawnPoint.position;
             player.maxMoves = roomMaxMoves;
             player.ResetGhost(roomSpawnPoint.position);
@@ -59,4 +61,6 @@ public class CameraManager : MonoBehaviour
         currentCamera = roomCamera;
         
     }
+
+   
 }
