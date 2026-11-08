@@ -36,7 +36,7 @@ public class Player : MonoBehaviour
     private CinemachineBrain brain;
 
     //temp
-    public TMP_Text debugText;
+    public TMP_Text movesText;
     private Collider2D debugHit;
     private bool lastOnLadder;
 
@@ -55,6 +55,7 @@ public class Player : MonoBehaviour
             movePoint.position = CameraManager.checkPoint;
         }
         spawnPos = transform.position;
+        UpdateUIMoves();
     }
 
     void Update()
@@ -179,6 +180,7 @@ public class Player : MonoBehaviour
                 ghostManager.TriggerStep();
             }
         }
+        UpdateUIMoves();
     }
 
     void SpawnGhost()
@@ -214,6 +216,7 @@ public class Player : MonoBehaviour
         ghostManager = null;
         recordedMoves.Clear();
         spawnPos = newSpawnPos;
+        UpdateUIMoves();
     }
 
     //checks beneath the player for terrain and falls until it finds some
@@ -268,6 +271,16 @@ public class Player : MonoBehaviour
     bool OnLadder()
     {
         return Physics2D.OverlapBox(movePoint.position, new Vector2(.5f, .5f), 0f, ladderLayer);
+    }
+
+    void UpdateUIMoves()
+    {
+        if (movesText == null)
+        {
+            return;
+        }
+        int remaining = ghostSpawned ? 0 : maxMoves - recordedMoves.Count;
+        movesText.text = "Moves: "  + remaining + "/" + maxMoves;
     }
 
     //gizmos for debug
